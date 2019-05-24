@@ -2,7 +2,7 @@
 
 namespace Kommands
 {
-	public interface IKcommandContext
+	public interface IKommandContext
 	{
 		ICommandHandler Handler { get; }
 		IExecuter Executer { get; }
