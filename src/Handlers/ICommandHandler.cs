@@ -18,6 +18,6 @@ namespace Kommands.Handlers
 		void Write(Color color, string text, params object[] args);
 
 		Task WriteAsync(string text, params object[] args);
-		Task WriteAsync(Color color, string Text, params object[] args);
+		Task WriteAsync(Color color, string text, params object[] args);
 	}
 }

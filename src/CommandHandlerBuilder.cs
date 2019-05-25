@@ -1,5 +1,6 @@
 ﻿using Kommands.Handlers;
 using System;
+using System.ComponentModel;
 using System.IO;
 
 namespace Kommands
@@ -13,6 +14,15 @@ namespace Kommands
 		public CommandHandlerBuilder Configure(Action<CommandHandlerOptions> options)
 		{
 			options.Invoke(handlerOptions);
+			return this;
+		}
+
+		public CommandHandlerBuilder AddTypeConverterForType<TC, T>() where TC : TypeConverter
+		{
+			Attribute[] attribute = new Attribute[1];
+			TypeConverterAttribute converterAttribute = new TypeConverterAttribute(typeof(TC));
+			attribute[0] = converterAttribute;
+			TypeDescriptor.AddAttributes(typeof(T), attribute);
 			return this;
 		}
 

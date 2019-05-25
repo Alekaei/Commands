@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kommands.Classes;
+using System;
 using System.Drawing;
 using System.Threading.Tasks;
 
@@ -7,16 +8,12 @@ namespace Kommands.Handlers
 	public class CommandHandlerBase : ICommandHandler
 	{
 		public CommandHandlerOptions Options { get; }
+		public Commands Commands { get; }
 
 		public CommandHandlerBase(CommandHandlerOptions options)
 		{
 			Options = options;
-			GenerateCommands();
-		}
-
-		public virtual void GenerateCommands()
-		{
-			throw new NotImplementedException();
+			Commands = new Commands();
 		}
 
 		public virtual void HandleCommand(IExecuter executer, string command)
