@@ -2,7 +2,7 @@
 
 namespace Kommands
 {
-	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
+	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
 	public class SummaryAttribute : Attribute
 	{
 		public string Summary { get; }

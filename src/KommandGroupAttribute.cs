@@ -2,7 +2,7 @@
 
 namespace Kommands
 {
-	[AttributeUsage(AttributeTargets.Class)]
+	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
 	public class KommandGroupAttribute : Attribute
 	{
 		public string Name { get; }
