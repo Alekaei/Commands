@@ -61,15 +61,17 @@ namespace Commands.Classes
 			{
 				Parameter param = Arguments[paramI];
 
-				if (param.IsContext)
-					args[i] = context;
-				else if (param.IsOptional)
-					args[i] = param.DefaultValue;
-				else if (param.IsFlag)
-				{
-					// Implement flag parsing 
-				}
-				else if (!param.IsParams)
+				// This bit is fucked dont expect it to parse anything useful
+				//if (param.IsContext)
+				//	args[i] = context;
+				//else if (param.IsOptional)
+				//	args[i] = param.DefaultValue;
+				//else if (param.IsFlag)
+				//{
+				//	// Implement flag parsing 
+				//}
+				//else 
+				if (!param.IsParams)
 					paramI++;
 
 				TypeConverter converter = TypeDescriptor.GetConverter(param.ParameterInfo.ParameterType);
