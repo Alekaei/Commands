@@ -16,7 +16,7 @@ Commands is a .Net Standard attribute command handler designed to be extendable 
 
 ```csharp
 // Pass an output stream such as the console
-ICommandHandler commandHandler = new CommandHandlerBuild()
+ICommandHandler commandHandler = new CommandHandlerBuilder()
 	.UseDefault(OutputStream); 
 ```
 
