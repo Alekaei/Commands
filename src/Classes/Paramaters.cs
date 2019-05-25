@@ -39,7 +39,7 @@ namespace Commands.Classes
 					isContext: isContext));
 			}
 
-			// Throw exception if a IKommandContext parameter isnt found
+			// Throw exception if a ICommandContext parameter isnt found
 			if (!hasContextParameter)
 				throw new MissingContextParameterException(methodInfo);
 
