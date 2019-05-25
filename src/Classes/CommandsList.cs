@@ -13,13 +13,18 @@ namespace Commands.Classes
 		public CommandsList()
 		{
 			IEnumerable<Type> types = Assembly.GetEntryAssembly().GetTypes()
-				.Where(t => t.IsDefined(typeof(CommandGroupAttribute), false) && !t.IsNested);
+				.Where(t => t.IsDefined(typeof(CommandGroupAttribute), false)
+					&& !(t.IsNested && (t.DeclaringType?.IsDefined(typeof(CommandGroupAttribute), false) ?? false)));
 
 			IEnumerable<MethodInfo> methods = Assembly.GetEntryAssembly().GetTypes()
 				.SelectMany(t => t.GetMethods())
 				.Where(m => m.IsDefined(typeof(CommandAttribute), false)
-					&& !m.DeclaringType.IsDefined(typeof(CommandGroupAttribute), false));
+					&& !(m.DeclaringType?.IsDefined(typeof(CommandGroupAttribute), false) ?? false));
 		}
+
+		public Command FindCommand(string name)
+			=> commands.FirstOrDefault(c => c.Name == name.ToLowerInvariant()
+				|| c.Aliases.Contains(name.ToLowerInvariant()));
 
 		private Command HandleCommandGroup(Type type)
 		{
@@ -63,7 +68,6 @@ namespace Commands.Classes
 				methodInfo: defaultCommand?.MethodInfo,
 				paramaters: defaultCommand?.Paramaters);
 		}
-
 		private Command HandleCommand(MethodInfo methodInfo)
 		{
 			if (!methodInfo.IsStatic)

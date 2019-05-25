@@ -1,7 +1,9 @@
 ﻿using Commands.Handlers;
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace Commands.Classes
 {
@@ -14,6 +16,8 @@ namespace Commands.Classes
 		public MethodInfo MethodInfo { get; }
 		public Paramaters Paramaters { get; }
 
+		public bool IsAsync { get; }
+
 		public Command(string name, string[] aliases, string summary,
 			IEnumerable<Command> subCommands, MethodInfo methodInfo, Paramaters paramaters)
 		{
@@ -23,12 +27,61 @@ namespace Commands.Classes
 			SubCommands = subCommands;
 			MethodInfo = methodInfo;
 			Paramaters = paramaters;
+
+			IsAsync = methodInfo.IsDefined(typeof(AsyncStateMachineAttribute), false);
 		}
 
-		public void Execute(ICommandHandler handler, IExecuter executer, string[] args)
+		public Command FindSubCommand(string name)
+			=> SubCommands.FirstOrDefault(sc => sc.Name == name.ToLowerInvariant()
+				|| sc.Aliases.Contains(name.ToLowerInvariant()));
+
+		public bool Execute(ICommandHandler handler, IExecuter executer, string[] args)
 		{
 			CommandContext context = new CommandContext(handler, executer);
-			throw new NotImplementedException();
+			return Execute(context, args);
+		}
+
+		public bool Execute(ICommandContext context, string[] args)
+		{
+			Command subCommand = FindSubCommand(args[0]);
+			if (subCommand != null)
+				return subCommand.Execute(context, args.Skip(1).ToArray());
+
+			if (!Paramaters.TryParseStringArgs(context, args, out object[] commandparams))
+				return false;
+
+			try
+			{
+				MethodInfo.Invoke(null, commandparams);
+				return true;
+			}
+			catch { return false; }
+		}
+
+		public async Task<bool> ExecuteAsync(ICommandHandler handler, IExecuter executer, string[] args)
+		{
+			CommandContext context = new CommandContext(handler, executer);
+			return await ExecuteAsync(context, args);
+		}
+
+		public async Task<bool> ExecuteAsync(ICommandContext context, string[] args)
+		{
+			Command subCommand = FindSubCommand(args[0]);
+			if (subCommand != null)
+				return subCommand.Execute(context, args.Skip(1).ToArray());
+
+			if (!Paramaters.TryParseStringArgs(context, args, out object[] commandparams))
+				return false;
+
+			try
+			{
+				if (IsAsync)
+					await (dynamic)MethodInfo.Invoke(null, commandparams);
+				else
+					MethodInfo.Invoke(null, commandparams);
+				return true;
+			}
+			catch { return false; }
 		}
 	}
 }

@@ -1,6 +1,8 @@
 ﻿using Commands.Classes;
 using System;
 using System.Drawing;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Commands.Handlers
@@ -16,14 +18,42 @@ namespace Commands.Handlers
 			Commands = new CommandsList();
 		}
 
-		public virtual void HandleCommand(IExecuter executer, string command)
+		public virtual bool HandleCommand(IExecuter executer, string commandText)
 		{
-			throw new NotImplementedException();
+			Regex re = new Regex("\"(?<arg>.*?)\\\"|'(?<arg>.*?)'|(?<arg>[^\\s]+)");
+			MatchCollection matches = re.Matches(commandText.Trim());
+			string[] split = new string[matches.Count];
+			for (int i = 0; i < matches.Count; i++)
+			{
+				split[i] = matches[i].Groups[1].Value;
+			}
+
+			string commandName = split[0];
+			string[] args = split.Skip(1).ToArray();
+
+			Command command = Commands.FindCommand(commandName);
+			if (command == null) return false;
+
+			return command.Execute(this, executer, args);
 		}
 
-		public virtual async Task HandleCommandAsync(IExecuter executer, string command)
+		public virtual async Task<bool> HandleCommandAsync(IExecuter executer, string commandText)
 		{
-			throw new NotImplementedException();
+			Regex re = new Regex("\"(?<arg>.*?)\\\"|'(?<arg>.*?)'|(?<arg>[^\\s]+)");
+			MatchCollection matches = re.Matches(commandText.Trim());
+			string[] split = new string[matches.Count];
+			for (int i = 0; i < matches.Count; i++)
+			{
+				split[i] = matches[i].Groups[1].Value;
+			}
+
+			string commandName = split[0];
+			string[] args = split.Skip(1).ToArray();
+
+			Command command = Commands.FindCommand(commandName);
+			if (command == null) return false;
+
+			return await command.ExecuteAsync(this, executer, args);
 		}
 
 		public virtual void Write(string text, params object[] args)

@@ -5,8 +5,8 @@ namespace Commands.Handlers
 {
 	public interface ICommandHandler
 	{
-		void HandleCommand(IExecuter executer, string command);
-		Task HandleCommandAsync(IExecuter executer, string command);
+		void HandleCommand(IExecuter executer, string commandText);
+		Task HandleCommandAsync(IExecuter executer, string commandText);
 
 		void WriteLine(string text, params object[] args);
 		void WriteLine(Color color, string text, params object[] args);
