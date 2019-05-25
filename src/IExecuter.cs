@@ -1,4 +1,4 @@
-﻿namespace Kommands
+﻿namespace Commands
 {
 	public interface IExecuter
 	{

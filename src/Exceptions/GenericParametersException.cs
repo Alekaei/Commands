@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Kommands.Exceptions
+namespace Commands.Exceptions
 {
 	public class GenericParametersException : Exception
 	{

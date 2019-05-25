@@ -1,10 +1,10 @@
-﻿using Kommands.Handlers;
+﻿using Commands.Handlers;
 using System.Drawing;
 using System.Threading.Tasks;
 
-namespace Kommands
+namespace Commands
 {
-	public interface IKommandContext
+	public interface ICommandContext
 	{
 		ICommandHandler Handler { get; }
 		IExecuter Executer { get; }

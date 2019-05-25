@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Kommands.Handlers
+namespace Commands.Handlers
 {
 	public class DefaultCommandHandler : CommandHandlerBase
 	{

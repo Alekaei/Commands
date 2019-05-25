@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Threading.Tasks;
 
-namespace Kommands.Handlers
+namespace Commands.Handlers
 {
 	public interface ICommandHandler
 	{

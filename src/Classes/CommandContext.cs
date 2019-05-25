@@ -1,16 +1,16 @@
-﻿using Kommands.Handlers;
+﻿using Commands.Handlers;
 using System.Drawing;
 using System.Threading.Tasks;
 
-namespace Kommands.Classes
+namespace Commands.Classes
 {
-	public class KommandContext : IKommandContext
+	public class CommandContext : ICommandContext
 	{
 		public ICommandHandler Handler { get; }
 
 		public IExecuter Executer { get; }
 
-		public KommandContext(ICommandHandler handler, IExecuter executer)
+		public CommandContext(ICommandHandler handler, IExecuter executer)
 		{
 			Handler = handler;
 			Executer = executer;

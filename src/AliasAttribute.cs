@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace Kommands
+namespace Commands
 {
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
 	public class AliasAttribute : Attribute

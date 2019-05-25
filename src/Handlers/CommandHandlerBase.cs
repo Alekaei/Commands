@@ -1,19 +1,19 @@
-﻿using Kommands.Classes;
+﻿using Commands.Classes;
 using System;
 using System.Drawing;
 using System.Threading.Tasks;
 
-namespace Kommands.Handlers
+namespace Commands.Handlers
 {
 	public class CommandHandlerBase : ICommandHandler
 	{
 		public CommandHandlerOptions Options { get; }
-		public Commands Commands { get; }
+		public CommandsList Commands { get; }
 
 		public CommandHandlerBase(CommandHandlerOptions options)
 		{
 			Options = options;
-			Commands = new Commands();
+			Commands = new CommandsList();
 		}
 
 		public virtual void HandleCommand(IExecuter executer, string command)

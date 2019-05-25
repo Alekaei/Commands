@@ -1,21 +1,21 @@
-﻿using Kommands.Handlers;
+﻿using Commands.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Kommands.Classes
+namespace Commands.Classes
 {
-	public class Kommand
+	public class Command
 	{
 		public string Name { get; }
 		public string[] Aliases { get; }
 		public string Summary { get; }
-		public IEnumerable<Kommand> SubCommands { get; }
+		public IEnumerable<Command> SubCommands { get; }
 		public MethodInfo MethodInfo { get; }
 		public Paramaters Paramaters { get; }
 
-		public Kommand(string name, string[] aliases, string summary,
-			IEnumerable<Kommand> subCommands, MethodInfo methodInfo, Paramaters paramaters)
+		public Command(string name, string[] aliases, string summary,
+			IEnumerable<Command> subCommands, MethodInfo methodInfo, Paramaters paramaters)
 		{
 			Name = name;
 			Aliases = aliases;
@@ -27,7 +27,7 @@ namespace Kommands.Classes
 
 		public void Execute(ICommandHandler handler, IExecuter executer, string[] args)
 		{
-			KommandContext context = new KommandContext(handler, executer);
+			CommandContext context = new CommandContext(handler, executer);
 			throw new NotImplementedException();
 		}
 	}

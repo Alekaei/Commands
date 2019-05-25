@@ -1,46 +1,46 @@
-﻿using Kommands.Exceptions;
+﻿using Commands.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Kommands.Classes
+namespace Commands.Classes
 {
-	public class Commands
+	public class CommandsList
 	{
-		public IEnumerable<Kommand> kommands { get; }
+		public IEnumerable<Command> kommands { get; }
 
-		public Commands()
+		public CommandsList()
 		{
 			IEnumerable<Type> types = Assembly.GetEntryAssembly().GetTypes()
-				.Where(t => t.IsDefined(typeof(KommandGroupAttribute), false) && !t.IsNested);
+				.Where(t => t.IsDefined(typeof(CommandGroupAttribute), false) && !t.IsNested);
 
 			IEnumerable<MethodInfo> methods = Assembly.GetEntryAssembly().GetTypes()
 				.SelectMany(t => t.GetMethods())
-				.Where(m => m.IsDefined(typeof(KommandAttribute), false)
-					&& !m.DeclaringType.IsDefined(typeof(KommandGroupAttribute), false));
+				.Where(m => m.IsDefined(typeof(CommandAttribute), false)
+					&& !m.DeclaringType.IsDefined(typeof(CommandGroupAttribute), false));
 		}
 
-		private Kommand HandleKommandGroup(Type type)
+		private Command HandleKommandGroup(Type type)
 		{
-			KommandGroupAttribute kommandGroupAttribute = type.GetCustomAttribute<KommandGroupAttribute>(false);
+			CommandGroupAttribute kommandGroupAttribute = type.GetCustomAttribute<CommandGroupAttribute>(false);
 			AliasAttribute aliasAttribute = type.GetCustomAttribute<AliasAttribute>(false);
 			SummaryAttribute summaryAttribute = type.GetCustomAttribute<SummaryAttribute>(false);
 
 			// Get all methods that have a KommandAttribute
 			IEnumerable<MethodInfo> methods = type.GetMethods()
-				.Where(m => m.IsDefined(typeof(KommandAttribute), false));
+				.Where(m => m.IsDefined(typeof(CommandAttribute), false));
 			// Get all nested classes with a KommandGroupAttribute
 			IEnumerable<Type> subTypes = type.GetNestedTypes()
-				.Where(t => t.IsDefined(typeof(KommandGroupAttribute), false));
+				.Where(t => t.IsDefined(typeof(CommandGroupAttribute), false));
 
 			// Default command is when a method in a group has a no name meaning its the default method to call
-			Kommand defaultCommand = null;
+			Command defaultCommand = null;
 
-			List<Kommand> subCommands = new List<Kommand>();
+			List<Command> subCommands = new List<Command>();
 			foreach (MethodInfo method in methods)
 			{
-				Kommand subCommand = HandleKommand(method);
+				Command subCommand = HandleKommand(method);
 				// Check if its the default command
 				if (subCommand.Name == null && defaultCommand == null)
 					defaultCommand = subCommand;
@@ -55,7 +55,7 @@ namespace Kommands.Classes
 				subCommands.Add(HandleKommandGroup(subType));
 			}
 
-			return new Kommand(
+			return new Command(
 				name: kommandGroupAttribute.Name,
 				aliases: aliasAttribute?.Aliases ?? defaultCommand?.Aliases,
 				summary: summaryAttribute?.Summary ?? defaultCommand?.Summary,
@@ -64,22 +64,22 @@ namespace Kommands.Classes
 				paramaters: defaultCommand?.Paramaters);
 		}
 
-		private Kommand HandleKommand(MethodInfo methodInfo)
+		private Command HandleKommand(MethodInfo methodInfo)
 		{
 			if (!methodInfo.IsStatic)
 				throw new MethodNotStaticException(methodInfo);
 			if (methodInfo.ContainsGenericParameters)
 				throw new GenericParametersException(methodInfo);
 
-			KommandAttribute kommandAttribute = methodInfo.GetCustomAttribute<KommandAttribute>(false);
+			CommandAttribute kommandAttribute = methodInfo.GetCustomAttribute<CommandAttribute>(false);
 			AliasAttribute aliasAttribute = methodInfo.GetCustomAttribute<AliasAttribute>(false);
 			SummaryAttribute summaryAttribute = methodInfo.GetCustomAttribute<SummaryAttribute>(false);
 
-			return new Kommand(
+			return new Command(
 				name: kommandAttribute.Name,
 				aliases: aliasAttribute?.Aliases,
 				summary: summaryAttribute?.Summary,
-				subCommands: new List<Kommand>(),
+				subCommands: new List<Command>(),
 				methodInfo: methodInfo,
 				paramaters: new Paramaters(methodInfo));
 		}

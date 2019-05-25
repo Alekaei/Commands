@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Kommands.Exceptions
+namespace Commands.Exceptions
 {
 	public class MultipleDefaultCommandsException : Exception
 	{

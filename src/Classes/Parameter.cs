@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Kommands.Classes
+namespace Commands.Classes
 {
 	public class Parameter
 	{

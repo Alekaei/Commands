@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Kommands
+namespace Commands
 {
 	[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
 	public class FlagAttribute : Attribute

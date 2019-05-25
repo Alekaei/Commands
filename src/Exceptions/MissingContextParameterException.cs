@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Kommands.Exceptions
+namespace Commands.Exceptions
 {
 	public class MissingContextParameterException : Exception
 	{
 		public MethodInfo MethodInfo { get; }
 		public MissingContextParameterException(MethodInfo methodInfo)
-			: base($"Missing IKommandContext parameter in method `{methodInfo.Name}`")
+			: base($"Missing ICommandContext parameter in method `{methodInfo.Name}`")
 		{ MethodInfo = methodInfo; }
 	}
 }

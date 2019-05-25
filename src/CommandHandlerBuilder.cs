@@ -1,9 +1,9 @@
-﻿using Kommands.Handlers;
+﻿using Commands.Handlers;
 using System;
 using System.ComponentModel;
 using System.IO;
 
-namespace Kommands
+namespace Commands
 {
 	public class CommandHandlerBuilder
 	{

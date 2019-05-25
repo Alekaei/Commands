@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Kommands
+namespace Commands
 {
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
 	public class SummaryAttribute : Attribute

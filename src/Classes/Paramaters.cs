@@ -1,10 +1,10 @@
-﻿using Kommands.Exceptions;
+﻿using Commands.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Kommands.Classes
+namespace Commands.Classes
 {
 	public class Paramaters
 	{
@@ -19,7 +19,7 @@ namespace Kommands.Classes
 			foreach (ParameterInfo param in methodInfo.GetParameters())
 			{
 				bool isContext = false;
-				if (param.ParameterType.IsAssignableFrom(typeof(IKommandContext)))
+				if (param.ParameterType.IsAssignableFrom(typeof(ICommandContext)))
 				{
 					hasContextParameter = true;
 					isContext = true;
@@ -47,7 +47,7 @@ namespace Kommands.Classes
 			Syntax = GenerateSyntax();
 		}
 
-		public bool TryParseStringArgs(IKommandContext context, string[] sArgs, out object[] args)
+		public bool TryParseStringArgs(ICommandContext context, string[] sArgs, out object[] args)
 		{
 			throw new NotImplementedException();
 		}

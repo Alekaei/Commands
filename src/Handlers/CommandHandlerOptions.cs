@@ -1,4 +1,4 @@
-﻿namespace Kommands.Handlers
+﻿namespace Commands.Handlers
 {
 	public class CommandHandlerOptions
 	{
