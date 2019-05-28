@@ -14,11 +14,7 @@ namespace Commands.Classes
 		public bool IsFlag { get; }
 		public char? ShortName { get; }
 		public string LongName { get; }
-		public bool DefaultValue {
-			get {
-				return (bool)(ParameterInfo.DefaultValue ?? false);
-			}
-		}
+		public bool DefaultValue { get; }
 
 		public bool IsParams { get; }
 		public bool IsContext { get; }
@@ -29,7 +25,7 @@ namespace Commands.Classes
 		}
 
 		public Parameter(ParameterInfo parameterInfo, bool isFlag, char? shortName,
-			string longName, bool isParams, bool isContext)
+			string longName, bool isParams, bool isContext, bool defaultFlagValue)
 		{
 			ParameterInfo = parameterInfo;
 			IsFlag = isFlag;
@@ -37,6 +33,8 @@ namespace Commands.Classes
 			LongName = longName;
 			IsParams = isParams;
 			IsContext = isContext;
+
+			DefaultValue = parameterInfo.HasDefaultValue ? (bool)parameterInfo.DefaultValue : defaultFlagValue;
 		}
 	}
 }

@@ -41,7 +41,8 @@ namespace Commands.Classes
 					shortName: flagAttribute?.ShortName,
 					longName: flagAttribute?.LongName,
 					isParams: param.IsDefined(typeof(ParamArrayAttribute), false),
-					isContext: isContext));
+					isContext: isContext,
+					defaultFlagValue: flagAttribute?.DefaultValue ?? false));
 			}
 
 			// Throw exception if a ICommandContext parameter isnt found
@@ -56,30 +57,68 @@ namespace Commands.Classes
 		{
 			args = new object[sArgs.Length];
 
+			List<(Parameter param, int index)> flagParams = new List<(Parameter, int)>();
+			List<string> flags = new List<string>();
+
 			int paramI = 0;
 			for (int i = 0; i < sArgs.Length; i++)
 			{
 				Parameter param = Arguments[paramI];
 
-				// This bit is fucked dont expect it to parse anything useful
-				//if (param.IsContext)
-				//	args[i] = context;
-				//else if (param.IsOptional)
-				//	args[i] = param.DefaultValue;
-				//else if (param.IsFlag)
-				//{
-				//	// Implement flag parsing 
-				//}
-				//else 
+				if (param.IsContext)
+				{
+					args[i] = context;
+					continue;
+				}
+
+				if (sArgs[i].StartsWith("--"))
+				{
+					flags.Add(sArgs[i].TrimStart('-'));
+					continue;
+				}
+				if (sArgs[i].StartsWith("-"))
+				{
+					flags.AddRange(sArgs[i].TrimStart('-').ToCharArray().Select(c => c.ToString()));
+					continue;
+				}
+
 				if (!param.IsParams)
 					paramI++;
 
+				if (param.IsFlag)
+				{
+					flagParams.Add((param, i));
+					continue;
+				}
+
 				TypeConverter converter = TypeDescriptor.GetConverter(param.ParameterInfo.ParameterType);
-				object result = converter.ConvertFrom(sArgs[i]);
-				if (result.GetType() != param.ParameterInfo.ParameterType)
-					return false;
-				args[i] = result;
+				try
+				{
+					object result = converter.ConvertFrom(sArgs[i]);
+					if (result.GetType() != param.ParameterInfo.ParameterType)
+						throw new Exception();
+
+					args[i] = result;
+				}
+				catch
+				{
+					if (param.IsOptional)
+						args[i] = param.DefaultValue;
+				}
 			}
+
+			foreach ((Parameter param, int index) flag in flagParams)
+			{
+				if (flags.FirstOrDefault(f => f == flag.param.ShortName.ToString() || f == flag.param.LongName) == null)
+				{
+					// if flag param not present, set to default
+					args[flag.index] = flag.param.DefaultValue;
+					continue;
+				}
+				// If flag param is present,   set to opposite of default
+				args[flag.index] = !flag.param.DefaultValue;
+			}
+
 			return true;
 		}
 
