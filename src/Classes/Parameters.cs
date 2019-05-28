@@ -91,6 +91,31 @@ namespace Commands.Classes
 					continue;
 				}
 
+				if (param.IsArrayOrList)
+				{
+					string[] arraySArgs = sArgs[i].Split(new string[] { ":#:" }, StringSplitOptions.None);
+					object[] array = new object[arraySArgs.Length];
+					try
+					{
+						TypeConverter elemConverter = TypeDescriptor.GetConverter(param.ArrayType);
+						for (int j = 0; j < arraySArgs.Length; j++)
+						{
+							object result = elemConverter.ConvertFrom(arraySArgs[j]);
+							if (result.GetType() != param.ArrayType)
+								throw new Exception();
+							array[j] = result;
+						}
+						args[i] = array;
+					}
+					catch
+					{
+						if (param.IsOptional)
+							args[i] = param.DefaultValue;
+						else return false;
+					}
+					continue;
+				}
+
 				TypeConverter converter = TypeDescriptor.GetConverter(param.ParameterInfo.ParameterType);
 				try
 				{
@@ -104,6 +129,7 @@ namespace Commands.Classes
 				{
 					if (param.IsOptional)
 						args[i] = param.DefaultValue;
+					else return false;
 				}
 			}
 

@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace Commands.Classes
 {
@@ -21,6 +23,20 @@ namespace Commands.Classes
 		public bool IsOptional {
 			get {
 				return ParameterInfo.HasDefaultValue;
+			}
+		}
+		public bool IsArrayOrList {
+			get {
+				return ParameterInfo.ParameterType.IsArray
+					|| (ParameterInfo.ParameterType.IsGenericType && ParameterInfo.ParameterType.GetGenericTypeDefinition() == typeof(List<>));
+			}
+		}
+
+		public Type ArrayType {
+			get {
+				if (IsArrayOrList)
+					return ParameterInfo.ParameterType.GetElementType() ?? ParameterInfo.ParameterType.GenericTypeArguments[0];
+				return null;
 			}
 		}
 

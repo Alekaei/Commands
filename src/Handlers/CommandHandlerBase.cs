@@ -27,7 +27,6 @@ namespace Commands.Handlers
 			string[] split = new string[matches.Count];
 			for (int i = 0; i < matches.Count; i++)
 			{
-				// 
 				if (matches[i].Groups[4].Captures.Count > 1)
 				{
 					string[] captures = new string[matches[i].Groups[4].Captures.Count];
@@ -37,7 +36,7 @@ namespace Commands.Handlers
 						captures[j] = capture.ToString().Trim();
 						j++;
 					}
-					split[i] = String.Join(",", captures);
+					split[i] = String.Join(":#:", captures);
 				}
 				else
 					split[i] = matches[i].Groups[4].Captures[0].ToString().Trim();
@@ -61,7 +60,6 @@ namespace Commands.Handlers
 			string[] split = new string[matches.Count];
 			for (int i = 0; i < matches.Count; i++)
 			{
-				// 
 				if (matches[i].Groups[4].Captures.Count > 1)
 				{
 					string[] captures = new string[matches[i].Groups[4].Captures.Count];
@@ -71,7 +69,7 @@ namespace Commands.Handlers
 						captures[j] = capture.ToString().Trim();
 						j++;
 					}
-					split[i] = String.Join(",", captures);
+					split[i] = String.Join(":#:", captures);
 				}
 				else
 					split[i] = matches[i].Groups[4].Captures[0].ToString().Trim();
