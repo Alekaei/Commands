@@ -20,12 +20,27 @@ namespace Commands.Handlers
 
 		public virtual bool HandleCommand(IExecuter executer, string commandText)
 		{
-			Regex re = new Regex("\"(?<arg>.*?)\\\"|'(?<arg>.*?)'|(?<arg>[^\\s]+)");
+			//Regex re = new Regex("\"(?<arg>.*?)\\"|'(?<arg>.*?)'|(?<arg>[^\\s]+)");
+			// yes i know this is a cunt of a regex but unless someone know how to make it smaller, it stays
+			Regex re = new Regex("\"(?<val>.*?)\"|'(?<val>.*?)'|(\"(?<val>.*?)\"|'(?<val>.*?)'|(?<val>[\\w-=!@#$%^&*()_+\\[\\]{}\\|<>/?.:;`~]+))(,\\s*(\"(?<val>.*?)\"|'(?<val>.*?)'|(?<val>[\\w-=!@#$%^&*()_+\\[\\]{}\\|<>/?.:;`~]+)))*|(?<val>[^\\s]+)");
 			MatchCollection matches = re.Matches(commandText.Trim());
 			string[] split = new string[matches.Count];
 			for (int i = 0; i < matches.Count; i++)
 			{
-				split[i] = matches[i].Groups[1].Value;
+				// 
+				if (matches[i].Groups[4].Captures.Count > 1)
+				{
+					string[] captures = new string[matches[i].Groups[4].Captures.Count];
+					int j = 0;
+					foreach (object capture in matches[i].Groups[4].Captures)
+					{
+						captures[j] = capture.ToString().Trim();
+						j++;
+					}
+					split[i] = String.Join(",", captures);
+				}
+				else
+					split[i] = matches[i].Groups[4].Captures[0].ToString().Trim();
 			}
 
 			string commandName = split[0];
@@ -46,6 +61,7 @@ namespace Commands.Handlers
 			string[] split = new string[matches.Count];
 			for (int i = 0; i < matches.Count; i++)
 			{
+				// 
 				if (matches[i].Groups[4].Captures.Count > 1)
 				{
 					string[] captures = new string[matches[i].Groups[4].Captures.Count];
