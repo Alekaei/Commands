@@ -31,7 +31,11 @@ namespace Commands.Classes
 				if (flagAttribute != null && param.ParameterType != typeof(bool))
 					throw new FlagNotBoolException(methodInfo, param);
 
-				TypeConverter converter = TypeDescriptor.GetConverter(param.ParameterType);
+				Type checkType = param.ParameterType;
+				if (param.ParameterType.IsArray || (param.ParameterType.IsGenericType && param.ParameterType.GetGenericTypeDefinition() == typeof(List<>)))
+					checkType = param.ParameterType.GetElementType() ?? param.ParameterType.GetGenericArguments()[0];
+
+				TypeConverter converter = TypeDescriptor.GetConverter(checkType);
 				if (!converter.CanConvertFrom(typeof(string)))
 					throw new UnconvertableTypeParameterException(methodInfo, param);
 

@@ -35,7 +35,7 @@ namespace Commands.Classes
 		public Type ArrayType {
 			get {
 				if (IsArrayOrList)
-					return ParameterInfo.ParameterType.GetElementType() ?? ParameterInfo.ParameterType.GenericTypeArguments[0];
+					return ParameterInfo.ParameterType.GetElementType() ?? ParameterInfo.ParameterType.GetGenericArguments()[0];
 				return null;
 			}
 		}
