@@ -124,12 +124,16 @@ namespace Commands.Classes
 
 		private string GenerateSyntax()
 		{
-			return string.Join(" ", Arguments.Select(a =>
+			string flags = "";
+			string args = "";
+			foreach (Parameter arg in Arguments)
 			{
-				if (a.IsFlag) return (a.ShortName == null) ? $"--{a.LongName}" : $"-{a.ShortName}";
-				if (a.IsOptional) return $"[{a.Name}]";
-				return $"<{a.Name}>";
-			}));
+				if (arg.IsFlag)
+					flags += $" [{(arg.ShortName == null ? $"--{arg.LongName}" : $"-{arg.ShortName}")}]";
+				else
+					args += arg.IsOptional ? $"[{arg.Name}]" : $"<{arg.Name}>";
+			}
+			return $"{flags.Trim()} {args.Trim()}".Trim();
 		}
 	}
 }
