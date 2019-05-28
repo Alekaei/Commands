@@ -14,12 +14,12 @@ namespace Commands.Classes
 		public string Summary { get; }
 		public IEnumerable<Command> SubCommands { get; }
 		public MethodInfo MethodInfo { get; }
-		public Paramaters Paramaters { get; }
+		public Parameters Paramaters { get; }
 
 		public bool IsAsync { get; }
 
 		public Command(string name, string[] aliases, string summary,
-			IEnumerable<Command> subCommands, MethodInfo methodInfo, Paramaters paramaters)
+			IEnumerable<Command> subCommands, MethodInfo methodInfo, Parameters paramaters)
 		{
 			Name = name;
 			Aliases = aliases;

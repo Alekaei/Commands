@@ -85,7 +85,7 @@ namespace Commands.Classes
 				summary: summaryAttribute?.Summary,
 				subCommands: new List<Command>(),
 				methodInfo: methodInfo,
-				paramaters: new Paramaters(methodInfo));
+				paramaters: new Parameters(methodInfo));
 		}
 	}
 }

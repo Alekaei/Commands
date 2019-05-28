@@ -7,12 +7,12 @@ using System.Reflection;
 
 namespace Commands.Classes
 {
-	public class Paramaters
+	public class Parameters
 	{
 		public List<Parameter> Arguments { get; set; }
 		public string Syntax { get; }
 		public bool ContainsParams { get; }
-		public Paramaters(MethodInfo methodInfo)
+		public Parameters(MethodInfo methodInfo)
 		{
 			List<Parameter> args = new List<Parameter>();
 
@@ -130,6 +130,8 @@ namespace Commands.Classes
 			{
 				if (arg.IsFlag)
 					flags += $" [{(arg.ShortName == null ? $"--{arg.LongName}" : $"-{arg.ShortName}")}]";
+				if (arg.IsParams)
+					args += $"({arg.Name}...)";
 				else
 					args += arg.IsOptional ? $"[{arg.Name}]" : $"<{arg.Name}>";
 			}
