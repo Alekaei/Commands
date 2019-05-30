@@ -1,8 +1,6 @@
-﻿using Commands.Handlers;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Commands.Classes
@@ -11,77 +9,113 @@ namespace Commands.Classes
 	{
 		public string Name { get; }
 		public string[] Aliases { get; }
-		public string Summary { get; }
+		public string Summary { get; set; }
 		public IEnumerable<Command> SubCommands { get; }
-		public MethodInfo MethodInfo { get; }
-		public Parameters Paramaters { get; }
-
-		public bool IsAsync { get; }
+		public List<Method> Methods { get; set; }
 
 		public Command(string name, string[] aliases, string summary,
-			IEnumerable<Command> subCommands, MethodInfo methodInfo, Parameters paramaters)
+			IEnumerable<Command> subCommands, MethodInfo methodInfo)
 		{
 			Name = name;
 			Aliases = aliases;
 			Summary = summary;
 			SubCommands = subCommands;
-			MethodInfo = methodInfo;
-			Paramaters = paramaters;
+			Methods = new List<Method> { new Method(methodInfo) };
+		}
 
-			IsAsync = methodInfo.IsDefined(typeof(AsyncStateMachineAttribute), false);
+		public Command(string name, string[] aliases, string summary,
+			IEnumerable<Command> subCommands, List<Method> methods)
+		{
+			Name = name;
+			Aliases = aliases;
+			Summary = summary;
+			SubCommands = subCommands;
+			Methods = methods;
+		}
+
+		private IEnumerable<Command> GetMatchingCommands(string name)
+		{
+			foreach (Command subCommand in SubCommands)
+			{
+				// If the first argument doesnt match the sub command name or isnt an alias skip to next sub command
+				if (subCommand.Name != name && !subCommand.Aliases.Contains(name.ToLowerInvariant()))
+					continue;
+
+				yield return subCommand;
+			}
 		}
 
 		public Command FindSubCommand(string name)
 			=> SubCommands.FirstOrDefault(sc => sc.Name == name.ToLowerInvariant()
 				|| sc.Aliases.Contains(name.ToLowerInvariant()));
 
-		public bool Execute(ICommandHandler handler, IExecuter executer, string[] args)
-		{
-			CommandContext context = new CommandContext(handler, executer);
-			return Execute(context, args);
-		}
-
 		public bool Execute(ICommandContext context, string[] args)
 		{
-			Command subCommand = FindSubCommand(args[0]);
-			if (subCommand != null)
-				return subCommand.Execute(context, args.Skip(1).ToArray());
+			//Command subCommand = (args.Length > 0) ? FindSubCommand(args[0]) : null;
+			//if (subCommand != null)
+			//	return subCommand.Execute(context, args.Skip(1).ToArray());
 
-			if (!Paramaters.TryParseStringArgs(context, args, out object[] commandparams))
-				return false;
+			//if (!Paramaters.TryParseStringArgs(context, args, out object[] commandparams))
+			//	return false;
 
-			try
+			//try
+			//{
+			//	MethodInfo.Invoke(null, commandparams);
+			//	return true;
+			//}
+			//catch { return false; }
+			if (args.Length > 0)
 			{
-				MethodInfo.Invoke(null, commandparams);
-				return true;
+				foreach (Command command in GetMatchingCommands(args[0]))
+				{
+					bool res = command.Execute(context, args.Skip(1).ToArray());
+					if (res) return true;
+				}
 			}
-			catch { return false; }
-		}
 
-		public async Task<bool> ExecuteAsync(ICommandHandler handler, IExecuter executer, string[] args)
-		{
-			CommandContext context = new CommandContext(handler, executer);
-			return await ExecuteAsync(context, args);
+			foreach (Method method in Methods)
+			{
+				if (!method.Parameters.TryParseStringArgs(context, args, out object[] commandParams)) continue;
+				bool res = method.TryExecute(commandParams);
+				if (res) return true;
+			}
+			return false;
 		}
 
 		public async Task<bool> ExecuteAsync(ICommandContext context, string[] args)
 		{
-			Command subCommand = FindSubCommand(args[0]);
-			if (subCommand != null)
-				return subCommand.Execute(context, args.Skip(1).ToArray());
+			//Command subCommand = (args.Length > 0) ? FindSubCommand(args[0]) : null;
+			//if (subCommand != null)
+			//	return subCommand.Execute(context, args.Skip(1).ToArray());
 
-			if (!Paramaters.TryParseStringArgs(context, args, out object[] commandparams))
-				return false;
+			//if (!Paramaters.TryParseStringArgs(context, args, out object[] commandparams))
+			//	return false;
 
-			try
+			//try
+			//{
+			//	if (IsAsync)
+			//		await (Task)MethodInfo.Invoke(null, commandparams);
+			//	else
+			//		MethodInfo.Invoke(null, commandparams);
+			//	return true;
+			//}
+			//catch { return false; }
+			if (args.Length > 0)
 			{
-				if (IsAsync)
-					await (dynamic)MethodInfo.Invoke(null, commandparams);
-				else
-					MethodInfo.Invoke(null, commandparams);
-				return true;
+				foreach (Command command in GetMatchingCommands(args[0]))
+				{
+					bool res = await command.ExecuteAsync(context, args.Skip(1).ToArray());
+					if (res) return true;
+				}
 			}
-			catch { return false; }
+
+			foreach (Method method in Methods)
+			{
+				if (!method.Parameters.TryParseStringArgs(context, args, out object[] commandParams)) continue;
+				bool res = await method.TryExecuteAsync(commandParams);
+				if (res) return true;
+			}
+			return false;
 		}
 	}
 }

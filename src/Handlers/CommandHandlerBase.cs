@@ -18,8 +18,15 @@ namespace Commands.Handlers
 			Commands = new CommandsList();
 		}
 
+		private void Debug(string message)
+		{
+			if (!Options.Debug) return;
+			WriteLine("[Debug] " + message);
+		}
+
 		public virtual bool HandleCommand(IExecuter executer, string commandText)
 		{
+			Debug($"Handling command `{commandText}`");
 			//Regex re = new Regex("\"(?<arg>.*?)\\"|'(?<arg>.*?)'|(?<arg>[^\\s]+)");
 			// yes i know this is a cunt of a regex but unless someone know how to make it smaller, it stays
 			Regex re = new Regex("\"(?<val>.*?)\"|'(?<val>.*?)'|(\"(?<val>.*?)\"|'(?<val>.*?)'|(?<val>[\\w-=!@#$%^&*()_+\\[\\]{}\\|<>/?.:;`~]+))(,\\s*(\"(?<val>.*?)\"|'(?<val>.*?)'|(?<val>[\\w-=!@#$%^&*()_+\\[\\]{}\\|<>/?.:;`~]+)))*|(?<val>[^\\s]+)");
@@ -48,11 +55,12 @@ namespace Commands.Handlers
 			Command command = Commands.FindCommand(commandName);
 			if (command == null) return false;
 
-			return command.Execute(this, executer, args);
+			return command.Execute(new CommandContext(this, executer), args);
 		}
 
 		public virtual async Task<bool> HandleCommandAsync(IExecuter executer, string commandText)
 		{
+			Debug($"Handling command `{commandText}`");
 			//Regex re = new Regex("\"(?<arg>.*?)\\"|'(?<arg>.*?)'|(?<arg>[^\\s]+)");
 			// yes i know this is a cunt of a regex but unless someone know how to make it smaller, it stays
 			Regex re = new Regex("\"(?<val>.*?)\"|'(?<val>.*?)'|(\"(?<val>.*?)\"|'(?<val>.*?)'|(?<val>[\\w-=!@#$%^&*()_+\\[\\]{}\\|<>/?.:;`~]+))(,\\s*(\"(?<val>.*?)\"|'(?<val>.*?)'|(?<val>[\\w-=!@#$%^&*()_+\\[\\]{}\\|<>/?.:;`~]+)))*|(?<val>[^\\s]+)");
@@ -81,7 +89,7 @@ namespace Commands.Handlers
 			Command command = Commands.FindCommand(commandName);
 			if (command == null) return false;
 
-			return await command.ExecuteAsync(this, executer, args);
+			return await command.ExecuteAsync(new CommandContext(this, executer), args);
 		}
 
 		public virtual void Write(string text, params object[] args)

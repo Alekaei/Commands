@@ -13,6 +13,7 @@ namespace Commands.Classes
 			}
 		}
 
+		// Flag related
 		public bool IsFlag { get; }
 		public char? ShortName { get; }
 		public string LongName { get; }
@@ -20,28 +21,12 @@ namespace Commands.Classes
 
 		public bool IsParams { get; }
 		public bool IsContext { get; }
-		public bool IsOptional {
-			get {
-				return ParameterInfo.HasDefaultValue;
-			}
-		}
-		public bool IsArrayOrList {
-			get {
-				return ParameterInfo.ParameterType.IsArray
-					|| (ParameterInfo.ParameterType.IsGenericType && ParameterInfo.ParameterType.GetGenericTypeDefinition() == typeof(List<>));
-			}
-		}
+		public bool IsArrayOrList { get; }
 
-		public Type ArrayType {
-			get {
-				if (IsArrayOrList)
-					return ParameterInfo.ParameterType.GetElementType() ?? ParameterInfo.ParameterType.GetGenericArguments()[0];
-				return null;
-			}
-		}
+		public Type ConvertType { get; }
 
 		public Parameter(ParameterInfo parameterInfo, bool isFlag, char? shortName,
-			string longName, bool isParams, bool isContext, bool defaultFlagValue)
+			string longName, bool isParams, bool isContext, bool defaultValue)
 		{
 			ParameterInfo = parameterInfo;
 			IsFlag = isFlag;
@@ -50,7 +35,15 @@ namespace Commands.Classes
 			IsParams = isParams;
 			IsContext = isContext;
 
-			DefaultValue = parameterInfo.HasDefaultValue ? (bool)parameterInfo.DefaultValue : defaultFlagValue;
+			IsArrayOrList = ParameterInfo.ParameterType.IsArray
+					|| (ParameterInfo.ParameterType.IsGenericType
+						&& ParameterInfo.ParameterType.GetGenericTypeDefinition() == typeof(List<>));
+			if (IsArrayOrList)
+				ConvertType = ParameterInfo.ParameterType.GetElementType() ?? ParameterInfo.ParameterType.GetGenericArguments()[0];
+			else
+				ConvertType = ParameterInfo.ParameterType;
+
+			DefaultValue = defaultValue;
 		}
 	}
 }

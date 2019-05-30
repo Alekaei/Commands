@@ -2,5 +2,6 @@
 {
 	public class CommandHandlerOptions
 	{
+		public bool Debug { get; set; }
 	}
 }
