@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<package>
+  <metadata>
+    <id>Alekaei.Commands</id>
+    <version>0.1.0-alpha</version>
+    <title>Commands</title>
+    <authors>Aleksei Ivanov</authors>
+    <owners>Aleksei Ivanov</owners>
+    <license type="expression">MIT</license>
+	  <repository type="git" url="https://github.com/Alekaei/Commands" />
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Attribute based command system</description>
+    <releaseNotes>Initial 0.1.0-alpha release</releaseNotes>
+    <copyright>Copyright 2019 Aleksei Ivanov</copyright>
+    <tags>commands attributes commandattributes handler devconsole console dev developerconsole dotnet .net standard</tags>
+    <dependencies />
+    <summary>Commands is a .Net Standard library that adds Attribute based commands with an extendible CommandHandler, allowing you to create quick advanced commands for any system.</summary>
+  </metadata>
+  <files>
+    <file src="../README.md" />
+	<file src="../LICENSE.md" />
+    <file src="../src/bin/Debug/netstandard2.0/Commands.dll" target="lib\netstandard2.0\Commands.dll" />
+  </files>
+</package>
