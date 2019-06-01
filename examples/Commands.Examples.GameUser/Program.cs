@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Commands.Examples.GameUser
 {
@@ -19,7 +20,7 @@ namespace Commands.Examples.GameUser
 			string sValue = value as string;
 			// Will find an online user with a matching name
 			User user = Users.Instance.OnlineUsers.FirstOrDefault(u => u.Name == sValue);
-			return user ?? base.ConvertFrom(context, culture, value);
+			return user ?? null;
 		}
 	}
 
@@ -49,7 +50,7 @@ namespace Commands.Examples.GameUser
 		}
 
 		public override string ToString()
-			=> $"{(IsAdmin ? "[Admin] " : "")}{Name} has {Health} hp and the following items: {string.Join(", ", Items.Select(i => $"{i.Value}x {i.Key}"))}";
+			=> $"{(IsAdmin ? "[Admin] " : "")}{Name} has {Health} hp and the following items: \n{string.Join(", ", Items.Select(i => $"{i.Value}x {i.Key}"))}";
 	}
 
 	public class Users
@@ -72,23 +73,23 @@ namespace Commands.Examples.GameUser
 
 		// give <itemId>
 		[Command("give")]
-		public static void GiveItem(ICommandContext context, int itemId)
-			=> GiveItem(context, null, itemId, 1);
+		public static async Task GiveItem(ICommandContext context, int itemId)
+			=> await GiveItem(context, null, itemId, 1);
 
 		// give <itemId> <quantity>
 		[Command("give")]
-		public static void GiveItem(ICommandContext context, int itemId, int quantity)
-			=> GiveItem(context, null, itemId, quantity);
+		public static async Task GiveItem(ICommandContext context, int itemId, int quantity)
+			=> await GiveItem(context, null, itemId, quantity);
 
 		// give <user> <itemId>
 		[Command("give")]
-		public static void GiveItem(ICommandContext context, User user, int itemId)
-			=> GiveItem(context, user, itemId, 1);
+		public static async Task GiveItem(ICommandContext context, User user, int itemId)
+			=> await GiveItem(context, user, itemId, 1);
 
 		// give <user> <itemId> <quantity>
 		[Command("give")]
 		[Summary("Give an item to yourself or another user. *requires admin")]
-		public static void GiveItem(ICommandContext context, User user, int itemId, int quantity)
+		public static async Task GiveItem(ICommandContext context, User user, int itemId, int quantity)
 		{
 			// if the user we want to give an item to is null, set that user to ourselves
 			user = user ?? context.Executer as User;
@@ -97,11 +98,11 @@ namespace Commands.Examples.GameUser
 			if ((context.Executer as User).IsAdmin)
 			{
 				user.GiveItem(itemId, quantity);
-				context.WriteLine("Gave {0}x {1} to {2}", quantity, itemId, user.Name);
+				await context.WriteLineAsync("Gave {0}x {1} to {2}", quantity, itemId, user.Name);
 			}
 			else
 			{
-				context.WriteLine("You are not an admin");
+				await context.WriteLineAsync("You are not an admin");
 			}
 		}
 
@@ -111,25 +112,25 @@ namespace Commands.Examples.GameUser
 		{
 			// user
 			[Command]
-			public static void ListUser(ICommandContext context)
-				=> ListUser(context, null);
+			public static async Task ListUser(ICommandContext context)
+				=> await ListUser(context, null);
 
 			// user <user>
 			[Command]
-			public static void ListUser(ICommandContext context, User user)
+			public static async Task ListUser(ICommandContext context, User user)
 			{
 				user = user ?? context.Executer as User;
-				context.WriteLine(user.ToString());
+				await context.WriteLineAsync(user.ToString());
 			}
 
 			// user set <user>
 			[Command("set")]
 			[Alias("s")]
 			[Summary("Set the current user")]
-			public static void SetCurrentUser(ICommandContext context, User user)
+			public static async Task SetCurrentUser(ICommandContext context, User user)
 			{
 				Users.Instance.CurrentUser = user;
-				context.WriteLine("Set current user to {0}", user.Name);
+				await context.WriteLineAsync("Set current user to {0}", user.Name);
 			}
 
 			// user listall [-v]
@@ -138,14 +139,14 @@ namespace Commands.Examples.GameUser
 			[Command("listall")]
 			[Alias("list", "ls")]
 			[Summary("List all online users")]
-			public static void ListAll(ICommandContext context, [Flag('v', false)] bool verbose)
+			public static async Task ListAll(ICommandContext context, [Flag('v', false)] bool verbose)
 			{
 				if (verbose)
 					foreach (User user in Users.Instance.OnlineUsers)
-						context.WriteLine(user.ToString());
+						await context.WriteLineAsync(user.ToString());
 				else
 					foreach (User user in Users.Instance.OnlineUsers)
-						context.WriteLine("{0}{1} has {2} hp", user.IsAdmin ? "[Admin] " : "", user.Name, user.Health);
+						await context.WriteLineAsync("{0}{1} has {2} hp", user.IsAdmin ? "[Admin] " : "", user.Name, user.Health);
 			}
 		}
 	}
@@ -153,7 +154,7 @@ namespace Commands.Examples.GameUser
 	class Program
 	{
 
-		static void Main(string[] args)
+		static async Task Main(string[] args)
 		{
 			Users users = new Users();
 
@@ -173,7 +174,7 @@ namespace Commands.Examples.GameUser
 				if (input.StartsWith("/"))
 				{
 					string command = input.TrimStart('/');
-					bool res = handler.HandleCommand(users.CurrentUser, command);
+					bool res = await handler.HandleCommandAsync(users.CurrentUser, command);
 					if (res)
 					{
 						Console.ForegroundColor = ConsoleColor.Green;
