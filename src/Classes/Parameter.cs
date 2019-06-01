@@ -21,6 +21,8 @@ namespace Commands.Classes
 
 		public bool IsParams { get; }
 		public bool IsContext { get; }
+		public bool IsArray { get; }
+		public bool IsList { get; }
 		public bool IsArrayOrList { get; }
 
 		public Type ConvertType { get; }
@@ -35,9 +37,10 @@ namespace Commands.Classes
 			IsParams = isParams;
 			IsContext = isContext;
 
-			IsArrayOrList = ParameterInfo.ParameterType.IsArray
-					|| (ParameterInfo.ParameterType.IsGenericType
+			IsArray = ParameterInfo.ParameterType.IsArray;
+			IsList = (ParameterInfo.ParameterType.IsGenericType
 						&& ParameterInfo.ParameterType.GetGenericTypeDefinition() == typeof(List<>));
+			IsArrayOrList = IsArray || IsList;
 			if (IsArrayOrList)
 				ConvertType = ParameterInfo.ParameterType.GetElementType() ?? ParameterInfo.ParameterType.GetGenericArguments()[0];
 			else

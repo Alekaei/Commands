@@ -1,5 +1,6 @@
 ﻿using Commands.Exceptions;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -112,14 +113,16 @@ namespace Commands.Classes
 					if (parameter.IsArrayOrList && !parameter.IsParams)
 					{
 						string[] arraySArgs = sArg.Split(new string[] { ":#:" }, StringSplitOptions.None);
-						object[] array = new object[arraySArgs.Length];
+						object array = Activator.CreateInstance(parameter.ParameterInfo.ParameterType, arraySArgs.Length);
 
 						for (int j = 0; j < arraySArgs.Length; j++)
 						{
-							if (!TryConvert(parameter.ConvertType, arraySArgs[j], out array[j]))
+							if (!TryConvert(parameter.ConvertType, arraySArgs[j], out object res))
 								return false;
+							if (parameter.IsArray)
+								(array as Array).SetValue(res, j);
+							else (array as IList).Add(res);
 						}
-
 						args[i] = array;
 						stringArgIndex++;
 						continue;
