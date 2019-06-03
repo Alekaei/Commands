@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Alekaei.Commands</id>
-    <version>0.1.2-alpha</version>
+    <version>0.1.3-alpha</version>
     <title>Commands</title>
     <authors>Aleksei Ivanov</authors>
     <owners>Aleksei Ivanov</owners>
@@ -10,7 +10,6 @@
 	  <repository type="git" url="https://github.com/Alekaei/Commands" />
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Attribute based command system</description>
-    <releaseNotes>Initial 0.1.0-alpha release</releaseNotes>
     <copyright>Copyright 2019 Aleksei Ivanov</copyright>
     <tags>commands attributes commandattributes handler devconsole console dev developerconsole dotnet .net standard</tags>
     <dependencies />
