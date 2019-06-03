@@ -31,6 +31,7 @@ namespace Commands.Classes
 				}
 
 				FlagAttribute flagAttribute = param.GetCustomAttribute<FlagAttribute>(false);
+				NameAttribute nameAttribute = param.GetCustomAttribute<NameAttribute>(false);
 
 				if (flagAttribute != null && param.ParameterType != typeof(bool))
 					throw new UnsupportedNonBooleanFlagException(methodInfo, param);
@@ -47,6 +48,7 @@ namespace Commands.Classes
 				}
 
 				args.Add(new Parameter(
+					name: nameAttribute?.Name,
 					parameterInfo: param,
 					isFlag: flagAttribute != null,
 					shortName: flagAttribute?.ShortName,

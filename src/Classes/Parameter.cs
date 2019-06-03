@@ -7,11 +7,7 @@ namespace Commands.Classes
 	public class Parameter
 	{
 		public ParameterInfo ParameterInfo { get; }
-		public string Name {
-			get {
-				return ParameterInfo.Name;
-			}
-		}
+		public string Name { get; }
 
 		// Flag related
 		public bool IsFlag { get; }
@@ -27,9 +23,10 @@ namespace Commands.Classes
 
 		public Type ConvertType { get; }
 
-		public Parameter(ParameterInfo parameterInfo, bool isFlag, char? shortName,
+		public Parameter(string name, ParameterInfo parameterInfo, bool isFlag, char? shortName,
 			string longName, bool isParams, bool isContext, bool defaultValue)
 		{
+			Name = name ?? parameterInfo.Name;
 			ParameterInfo = parameterInfo;
 			IsFlag = isFlag;
 			ShortName = shortName;
