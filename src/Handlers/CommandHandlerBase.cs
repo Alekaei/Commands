@@ -19,7 +19,7 @@ namespace Commands.Handlers
 			Commands = new CommandsList();
 		}
 
-		private void Debug(string message)
+		public void Debug(string message)
 		{
 			if (!Options.Debug) return;
 			WriteLine("[Debug] " + message);
@@ -56,7 +56,15 @@ namespace Commands.Handlers
 			Command command = Commands.FindCommand(commandName);
 			if (command == null) return false;
 
-			return command.Execute(new CommandContext(this, executer), args);
+			try
+			{
+				return command.Execute(new CommandContext(this, executer), args);
+			}
+			catch (InvalidSyntaxException ex)
+			{
+				WriteLine(Color.Red, ex.Message);
+			}
+			return false;
 		}
 
 		public virtual async Task<bool> HandleCommandAsync(IExecuter executer, string commandText)
@@ -101,6 +109,7 @@ namespace Commands.Handlers
 			return false;
 		}
 
+		#region Write to output
 		public virtual void Write(string text, params object[] args)
 		{
 			throw new NotImplementedException();
@@ -140,5 +149,6 @@ namespace Commands.Handlers
 		{
 			throw new NotImplementedException();
 		}
+		#endregion
 	}
 }

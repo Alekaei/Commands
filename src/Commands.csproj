@@ -1,9 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Commands</AssemblyName>
     <RootNamespace>Commands</RootNamespace>
+    <Authors>Aleksei Ivanov</Authors>
+    <Description>A Attribute based command handler</Description>
+    <Copyright>Aleksei Ivanov</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <AssemblyVersion>0.1.3-alpha</AssemblyVersion>
+    <FileVersion>0.1.3-alpha</FileVersion>
+    <RepositoryUrl>https://github.com/Alekaei/Commands</RepositoryUrl>
   </PropertyGroup>
 
 </Project>

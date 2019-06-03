@@ -16,8 +16,6 @@ namespace Commands.Classes
 			Executer = executer;
 		}
 
-		// Shorten Writing to output experience from context
-
 		public void WriteLine(string text, params object[] args)
 			=> Handler?.WriteLine(text, args);
 		public void WriteLine(Color color, string text, params object[] args)
