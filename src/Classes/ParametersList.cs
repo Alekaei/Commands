@@ -61,7 +61,7 @@ namespace Commands.Classes
 				throw new MissingContextParameterException(methodInfo);
 
 			Parameters = args;
-			//Syntax = GenerateSyntax();
+			Syntax = GenerateSyntax();
 		}
 
 		public bool TryParseStringArgs(ICommandContext context, string[] stringArgs, out object[] args)
@@ -168,20 +168,19 @@ namespace Commands.Classes
 
 		private string GenerateSyntax()
 		{
-			//string flags = "";
-			//string args = "";
-			//foreach (Parameter arg in Parameters)
-			//{
-			//	if (arg.IsFlag)
-			//		flags += $" [{(arg.ShortName == null ? $"--{arg.LongName}" : $"-{arg.ShortName}")}]";
-			//	if (arg.IsParams)
-			//		args += $"({arg.Name}...)";
-			//	else
-			//		args += arg.IsOptional ? $"[{arg.Name}]" : $"<{arg.Name}>";
-			//}
-			//return $"{flags.Trim()} {args.Trim()}".Trim();
-
-			throw new NotImplementedException();
+			string flags = "";
+			string args = "";
+			foreach (Parameter arg in Parameters)
+			{
+				if (arg.IsContext) continue;
+				if (arg.IsFlag)
+					flags += $" [{(arg.ShortName == null ? $"--{arg.LongName}" : $"-{arg.ShortName}")}]";
+				else if (arg.IsParams)
+					args += $" ({arg.Name}...)";
+				else
+					args += $" <{arg.Name}>";
+			}
+			return $"{flags.Trim()} {args.Trim()}".Trim();
 		}
 	}
 }

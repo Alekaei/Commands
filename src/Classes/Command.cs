@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Commands.Exceptions;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -10,8 +11,11 @@ namespace Commands.Classes
 		public string Name { get; }
 		public string[] Aliases { get; }
 		public string Summary { get; set; }
+		public Command Parent { get; set; }
 		public IEnumerable<Command> SubCommands { get; }
 		public List<Method> Methods { get; set; }
+
+		public string Syntax => GenerateSyntax();
 
 		public Command(string name, string[] aliases, string summary,
 			IEnumerable<Command> subCommands, MethodInfo methodInfo)
@@ -21,6 +25,9 @@ namespace Commands.Classes
 			Summary = summary;
 			SubCommands = subCommands;
 			Methods = new List<Method> { new Method(methodInfo) };
+
+			foreach (Command subCommand in SubCommands)
+				subCommand.Parent = this;
 		}
 
 		public Command(string name, string[] aliases, string summary,
@@ -31,6 +38,9 @@ namespace Commands.Classes
 			Summary = summary;
 			SubCommands = subCommands;
 			Methods = methods;
+
+			foreach (Command subCommand in SubCommands)
+				subCommand.Parent = this;
 		}
 
 		private IEnumerable<Command> GetMatchingCommands(string name)
@@ -51,21 +61,9 @@ namespace Commands.Classes
 
 		public bool Execute(ICommandContext context, string[] args)
 		{
-			//Command subCommand = (args.Length > 0) ? FindSubCommand(args[0]) : null;
-			//if (subCommand != null)
-			//	return subCommand.Execute(context, args.Skip(1).ToArray());
-
-			//if (!Paramaters.TryParseStringArgs(context, args, out object[] commandparams))
-			//	return false;
-
-			//try
-			//{
-			//	MethodInfo.Invoke(null, commandparams);
-			//	return true;
-			//}
-			//catch { return false; }
 			if (args.Length > 0)
 			{
+				if (args[0] == "--help") throw new InvalidSyntaxException(this);
 				foreach (Command command in GetMatchingCommands(args[0]))
 				{
 					bool res = command.Execute(context, args.Skip(1).ToArray());
@@ -79,29 +77,14 @@ namespace Commands.Classes
 				bool res = method.TryExecute(commandParams);
 				if (res) return true;
 			}
-			return false;
+			throw new InvalidSyntaxException(this);
 		}
 
 		public async Task<bool> ExecuteAsync(ICommandContext context, string[] args)
 		{
-			//Command subCommand = (args.Length > 0) ? FindSubCommand(args[0]) : null;
-			//if (subCommand != null)
-			//	return subCommand.Execute(context, args.Skip(1).ToArray());
-
-			//if (!Paramaters.TryParseStringArgs(context, args, out object[] commandparams))
-			//	return false;
-
-			//try
-			//{
-			//	if (IsAsync)
-			//		await (Task)MethodInfo.Invoke(null, commandparams);
-			//	else
-			//		MethodInfo.Invoke(null, commandparams);
-			//	return true;
-			//}
-			//catch { return false; }
 			if (args.Length > 0)
 			{
+				if (args[0] == "--help") throw new InvalidSyntaxException(this);
 				foreach (Command command in GetMatchingCommands(args[0]))
 				{
 					bool res = await command.ExecuteAsync(context, args.Skip(1).ToArray());
@@ -115,7 +98,33 @@ namespace Commands.Classes
 				bool res = await method.TryExecuteAsync(commandParams);
 				if (res) return true;
 			}
-			return false;
+			throw new InvalidSyntaxException(this);
+		}
+
+		private string GenerateSyntax()
+		{
+			string syntax = "";
+
+			string name = "";
+			Command command = this;
+			while (command != null)
+			{
+				name = $"{command.Name} {name}".Trim();
+				command = command.Parent;
+			}
+			syntax = $"{name}\n";
+			if (Summary != null)
+				syntax += $"{new string(' ', name.Length)} {Summary}\n";
+			foreach (Method method in Methods)
+			{
+				syntax += $"{new string(' ', name.Length)} {method.Parameters.Syntax}\n";
+			}
+
+			foreach (Command subComand in SubCommands)
+			{
+				syntax += $"{new string(' ', name.Length)} {subComand.Name}\t {subComand.Summary}\n";
+			}
+			return syntax;
 		}
 	}
 }

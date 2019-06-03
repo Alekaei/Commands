@@ -12,14 +12,14 @@ namespace Commands.Classes
 
 		public CommandsList()
 		{
-			IEnumerable<Type> types = Assembly.GetEntryAssembly().GetTypes()
-				.Where(t => t.IsDefined(typeof(CommandGroupAttribute), false)
-					&& !((t.DeclaringType?.IsDefined(typeof(CommandGroupAttribute), false) ?? false)));
+			IEnumerable<Type> types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes()
+				 .Where(t => t.IsDefined(typeof(CommandGroupAttribute), false)
+					 && !((t.DeclaringType?.IsDefined(typeof(CommandGroupAttribute), false) ?? false))));
 
-			IEnumerable<MethodInfo> methods = Assembly.GetEntryAssembly().GetTypes()
+			IEnumerable<MethodInfo> methods = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes()
 				.SelectMany(t => t.GetMethods())
 				.Where(m => m.IsDefined(typeof(CommandAttribute), false)
-					&& !(m.DeclaringType?.IsDefined(typeof(CommandGroupAttribute), false) ?? false));
+					&& !(m.DeclaringType?.IsDefined(typeof(CommandGroupAttribute), false) ?? false)));
 
 			List<Command> commands = new List<Command>();
 

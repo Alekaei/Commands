@@ -22,7 +22,10 @@ namespace Commands.Classes
 		{
 			try
 			{
-				MethodInfo.Invoke(null, args);
+				if (IsAsync)
+					((Task)MethodInfo.Invoke(null, args)).Wait();
+				else
+					MethodInfo.Invoke(null, args);
 				return true;
 			}
 			catch
@@ -35,7 +38,10 @@ namespace Commands.Classes
 		{
 			try
 			{
-				await (Task)MethodInfo.Invoke(null, args);
+				if (IsAsync)
+					await (Task)MethodInfo.Invoke(null, args);
+				else
+					await Task.Run(() => MethodInfo.Invoke(null, args));
 				return true;
 			}
 			catch

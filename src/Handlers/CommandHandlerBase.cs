@@ -1,4 +1,5 @@
 ﻿using Commands.Classes;
+using Commands.Exceptions;
 using System;
 using System.Drawing;
 using System.Linq;
@@ -89,7 +90,15 @@ namespace Commands.Handlers
 			Command command = Commands.FindCommand(commandName);
 			if (command == null) return false;
 
-			return await command.ExecuteAsync(new CommandContext(this, executer), args);
+			try
+			{
+				return await command.ExecuteAsync(new CommandContext(this, executer), args);
+			}
+			catch (InvalidSyntaxException ex)
+			{
+				await WriteLineAsync(Color.Red, ex.Message);
+			}
+			return false;
 		}
 
 		public virtual void Write(string text, params object[] args)
