@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Alekaei.Commands" Version="0.1.1-alpha" />
+    <ProjectReference Include="..\..\src\Commands.csproj" />
   </ItemGroup>
 
 </Project>

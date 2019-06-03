@@ -1,4 +1,5 @@
-﻿using Commands.Handlers;
+﻿using Commands.Classes;
+using Commands.Handlers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -83,13 +84,13 @@ namespace Commands.Examples.GameUser
 
 		// give <user> <itemId>
 		[Command("give")]
-		public static async Task GiveItem(ICommandContext context, User user, int itemId)
+		public static async Task GiveItem(ICommandContext context, [Name("username")] User user, int itemId)
 			=> await GiveItem(context, user, itemId, 1);
 
 		// give <user> <itemId> <quantity>
 		[Command("give")]
 		[Summary("Give an item to yourself or another user. *requires admin")]
-		public static async Task GiveItem(ICommandContext context, User user, int itemId, int quantity)
+		public static async Task GiveItem(ICommandContext context, [Name("username")] User user, int itemId, int quantity)
 		{
 			// if the user we want to give an item to is null, set that user to ourselves
 			user = user ?? context.Executer as User;
@@ -107,7 +108,7 @@ namespace Commands.Examples.GameUser
 		}
 
 		[CommandGroup("user")]
-		[Summary("manage users")]
+		[Summary("Manage online users")]
 		public static class UserCommands
 		{
 			// user
@@ -159,10 +160,10 @@ namespace Commands.Examples.GameUser
 			Users users = new Users();
 
 			ICommandHandler handler = new CommandHandlerBuilder()
-				.Configure(options =>
-				{
-					options.Debug = true;
-				})
+				//.Configure(options =>
+				//{
+				//	options.Debug = true;
+				//})
 				.UseDefault(
 					 outputStream: Console.OpenStandardOutput(),
 					 encoding: Console.OutputEncoding);
