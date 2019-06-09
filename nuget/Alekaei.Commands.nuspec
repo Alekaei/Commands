@@ -2,14 +2,36 @@
 <package>
   <metadata>
     <id>Alekaei.Commands</id>
-    <version>0.1.3-alpha</version>
+    <version>0.2-beta</version>
     <title>Commands</title>
     <authors>Aleksei Ivanov</authors>
     <owners>Aleksei Ivanov</owners>
     <license type="expression">MIT</license>
 	  <repository type="git" url="https://github.com/Alekaei/Commands" />
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>Attribute based command system</description>
+    <description>Commands is a .NET Standard 2.0 attribute based command framework.
+
+> The project is still in early development
+
+## Features
+* Command Aliases
+* Command Summaries
+* Parameter Parsing
+* params keyword support
+* Parsers are extensible to custom types
+* ICommandContext that stores information about relevant to the command such as the IExecuter who called the command, as well as the ICommandHandler that executed the command   
+
+## Installation 
+### From Visual Studio
+Go to `Project>Manage Nuget Packages...` then navigate to the `Browse` tab and search for `Alekaei.Commands` and press the install button.
+> Note: You may need to check the `Include prerelease` checkbox for that package to come up
+### From Command Line
+Navigate to the project directory and type the following command `dotnet add package Alekaei.Commands`
+
+## Goals
+1. Provide an easy to use command framework for various projects
+2. Create a base that will contain all the necessary features to handle attribute commands and parsing
+3. Create handlers for various platforms such as a unity dev console</description>
     <copyright>Copyright 2019 Aleksei Ivanov</copyright>
     <tags>commands attributes commandattributes handler devconsole console dev developerconsole dotnet .net standard</tags>
     <dependencies />
@@ -18,6 +40,6 @@
   <files>
     <file src="../README.md" />
 	<file src="../LICENSE.md" />
-    <file src="../src/bin/Debug/netstandard2.0/Commands.dll" target="lib\netstandard2.0\Commands.dll" />
+    <file src="../src/bin/Release/netstandard2.0/Commands.dll" target="lib\netstandard2.0\Commands.dll" />
   </files>
 </package>
