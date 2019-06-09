@@ -138,6 +138,27 @@ namespace Commands.Examples.GameUser
 					foreach (User user in Users.Instance.OnlineUsers)
 						await context.WriteLineAsync("{0}{1} has {2} hp", user.IsAdmin ? "[Admin] " : "", user.Name, user.Health);
 			}
+
+			[Command("listall")]
+			public static async Task ListAll(ICommandContext context, [Flag('v', false)] bool verbose, params string[] names)
+			{
+				if (verbose)
+				{
+					foreach (User user in Users.Instance.OnlineUsers)
+					{
+						if (names.Contains(user.Name))
+							await context.WriteLineAsync(user.ToString());
+					}
+				}
+				else
+				{
+					foreach (User user in Users.Instance.OnlineUsers)
+					{
+						if (names.Contains(user.Name))
+							await context.WriteLineAsync("{0}{1} has {2} hp", user.IsAdmin ? "[Admin] " : "", user.Name, user.Health);
+					}
+				}
+			}
 		}
 	}
 

@@ -11,6 +11,7 @@ namespace Commands.Classes
 	public class ParametersList
 	{
 		public List<Parameter> Parameters { get; set; }
+		public int RequiredParamterCount { get; }
 		public string Syntax { get; }
 		public bool ContainsParams { get; }
 		public ParametersList(MethodInfo methodInfo)
@@ -47,6 +48,9 @@ namespace Commands.Classes
 						throw new UnconvertableTypeParameterException(methodInfo, param);
 				}
 
+				if (flagAttribute == null && !isContext)
+					RequiredParamterCount++;
+
 				args.Add(new Parameter(
 					name: nameAttribute?.Name,
 					parameterInfo: param,
@@ -69,6 +73,7 @@ namespace Commands.Classes
 		public bool TryParseStringArgs(ICommandContext context, string[] stringArgs, out object[] args)
 		{
 			args = new object[Parameters.Count];
+			if (stringArgs.Length < RequiredParamterCount) return false;
 
 			List<(Parameter param, int index)> flagParameters = new List<(Parameter param, int index)>();
 			List<string> flags = new List<string>();
@@ -92,6 +97,8 @@ namespace Commands.Classes
 				}
 			}
 
+			object paramsArray = null;
+			int pa = 0;
 			for (int i = 0; i < Parameters.Count; i++)
 			{
 				Parameter parameter = Parameters[i];
@@ -130,11 +137,25 @@ namespace Commands.Classes
 						continue;
 					}
 
-					if (!TryConvert(parameter.ConvertType, sArg, out args[i]))
+					if (!TryConvert(parameter.ConvertType, sArg, out object result))
 						return false;
+
+					if (parameter.IsParams)
+					{
+						if (paramsArray == null)
+							paramsArray = Activator.CreateInstance(parameter.ParameterInfo.ParameterType, stringArgs.Length - stringArgIndex);
+						(paramsArray as Array).SetValue(result, pa);
+						pa++;
+						i--;
+					}
+					else args[i] = result;
+
 					stringArgIndex++;
 				}
 			}
+
+			if (paramsArray != null)
+				args[args.Length - 1] = paramsArray;
 
 			if (stringArgIndex != stringArgs.Length)
 				return false;
