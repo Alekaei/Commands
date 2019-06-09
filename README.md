@@ -1,16 +1,25 @@
 # Commands
-Commands is a .Net Standard attribute command handler designed to be extendable to your desires.
+Commands is a .NET Standard 2.0 attribute based command framework.
 
-> The project is still in early development and multiple features arent implemented yet or only partially so
+> The project is still in early development
 
 ## Features
 * Command Aliases
 * Command Summaries
-* Text string to parameter parsing
-* params support
-* Uses type converter to convert from string to desired type meaning its easy to add your own converters
-* IExecuter that can be inherited to include info such as the user executing the command and features available on said user such as inventory, health, etc
-* Exceptions for invalid formatting on attributes
+* Parameter Parsing
+* params keyword support
+* Parsers are extensible to custom types
+* ICommandContext that stores information about relevant to the command such as the IExecuter who called the command, as well as the ICommandHandler that executed the command   
+
+## Installation 
+### From Visual Studio
+Go to `Project>Manage Nuget Packages...` then navigate to the `Browse` tab and search for `Alekaei.Commands` and press the install button.
+> Note: You may need to check the `Include prerelease` checkbox for that package to come up
+### From Command Line
+Navigate to the project directory and type the following command
+```
+dotnet add package Alekaei.Commands
+```
 
 ## Example creating default CommandHandler
 
@@ -51,8 +60,9 @@ handler.HandleCommand(users.CurrentUser, "give John 1015 300");
 ```
 
 ## Goals
-1. Create a base that will contain all the necessary features to handle attribute commands and parsing
-2. Create handlers for various platforms such as a unity dev console
+1. Provide an easy to use command framework for various projects
+2. Create a base that will contain all the necessary features to handle attribute commands and parsing
+3. Create handlers for various platforms such as a unity dev console
 
 ## License
 MIT @ Aleksei Ivanov
