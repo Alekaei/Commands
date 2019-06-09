@@ -1,8 +1,8 @@
 ﻿using Commands.Exceptions;
+using Commands.Parsing;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
@@ -42,8 +42,8 @@ namespace Commands.Classes
 
 				if (checkType != typeof(ICommandContext))
 				{
-					TypeConverter converter = TypeDescriptor.GetConverter(checkType);
-					if (!converter.CanConvertFrom(typeof(string)))
+					ITypeParser parser = Parser.GetParserForType(checkType);
+					if (parser == null)
 						throw new UnconvertableTypeParameterException(methodInfo, param);
 				}
 
@@ -68,7 +68,6 @@ namespace Commands.Classes
 
 		public bool TryParseStringArgs(ICommandContext context, string[] stringArgs, out object[] args)
 		{
-			// +1 to account for ICommandContext
 			args = new object[Parameters.Count];
 
 			List<(Parameter param, int index)> flagParameters = new List<(Parameter param, int index)>();
@@ -77,6 +76,7 @@ namespace Commands.Classes
 			if (args.Length < Parameters.Where(p => !p.IsFlag).Count())
 				return false;
 
+			// Find all flags in the strings
 			int stringArgIndex = 0;
 			foreach (string sArg in stringArgs)
 			{
@@ -154,18 +154,10 @@ namespace Commands.Classes
 		private bool TryConvert(Type from, string value, out object parsed)
 		{
 			parsed = null;
-			try
-			{
-				TypeConverter converter = TypeDescriptor.GetConverter(from);
-				parsed = converter.ConvertFromString(value);
-				if (parsed.GetType() != from || parsed == null)
-					return false;
-				return true;
-			}
-			catch
-			{
-				return false;
-			}
+			ITypeParser parser = Parser.GetParserForType(from);
+			if (parser == null) return false;
+			parsed = parser.Parse(value);
+			return parsed != null;
 		}
 
 		private string GenerateSyntax()

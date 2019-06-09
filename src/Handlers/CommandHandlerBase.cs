@@ -1,6 +1,9 @@
 ﻿using Commands.Classes;
 using Commands.Exceptions;
+using Commands.Parsing;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -17,6 +20,22 @@ namespace Commands.Handlers
 		{
 			Options = options;
 			Commands = new CommandsList();
+
+			RegisterTypeParsers();
+		}
+
+		private void RegisterTypeParsers()
+		{
+			IEnumerable<Type> parsers = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes())
+				.Where(t => t.IsDefined(typeof(TypeParser<>), false));
+
+			foreach (Type parser in parsers)
+			{
+				Attribute[] attribute = new Attribute[1];
+				TypeConverterAttribute converterAttribute = new TypeConverterAttribute(parser);
+				attribute[0] = converterAttribute;
+				TypeDescriptor.AddAttributes(parser.GetGenericArguments()[0], attribute);
+			}
 		}
 
 		public void Debug(string message)

@@ -1,33 +1,22 @@
 ﻿using Commands.Classes;
 using Commands.Handlers;
+using Commands.Parsing;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Commands.Examples.GameUser
 {
-	public class UserTypeConverter : TypeConverter
+	public class UserParser : TypeParser<User>
 	{
-		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+		public override object Parse(string from)
 		{
-			return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
-		}
-
-		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
-		{
-			string sValue = value as string;
-			// Will find an online user with a matching name
-			User user = Users.Instance.OnlineUsers.FirstOrDefault(u => u.Name == sValue);
-			return user ?? null;
+			return Users.Instance.OnlineUsers.FirstOrDefault(u => u.Name == from);
 		}
 	}
 
-	// Assigning the above type converter to our user.
 	// Our user inherits from IExecuter so that we can gain access to them in commands through the context
-	[TypeConverter(typeof(UserTypeConverter))]
 	public class User : IExecuter
 	{
 		public string Name { get; set; }
